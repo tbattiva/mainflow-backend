@@ -1,0 +1,48 @@
+- npm install express
+- npm install nodemon -D
+- build a script to start the server
+- create MongoDB database
+- create MongoDB User
+    u: mainflow
+    p: mainflow2020
+    connection: mongodb+srv://mainflow:<password>@cluster0-yef6o.mongodb.net/test?retryWrites=true&w=majority
+- npm install mongoose
+- npm install @zowe/cli
+- npm install cors
+
+==========================
+
+validar
+
+- flow
+    - phases
+- User
+    - *
+
+========================================
+
+index(){
+
+    },
+
+    store(){
+
+    },
+
+    delete(){
+
+    },
+
+    update(){
+
+    }
+
+
+
+
+
+  	"host":"192.86.32.91",
+    "port":"10443",
+    "user":"z58380",
+    "password":"ba9f0f",
+    "rejectUnauthorized":"false"
