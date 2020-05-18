@@ -29,10 +29,9 @@ module.exports = {
                     flowId,
                     { $push: { phases: docPhase._id } },
                     { new: true, useFindAndModify: false }
-                )
-                .populate('phases');
+                );
 
-                return resp.json(flowRelationship);
+                return resp.json(docPhase);
             }).catch(() => {
                 return resp.status(500).json({ret: -1, message: 'Phase add has got problems!'});
             });

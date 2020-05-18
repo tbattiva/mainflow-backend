@@ -1,7 +1,31 @@
 const FlowInstance = require('../Services/FlowInstance');
+const db = require('../models');
 
 
 module.exports = {
+    async index(req, resp){
+        const url = req.url;
+        const {status, sortType} = req.params;
+
+        try {
+            let query = db.Instance.find()
+                .sort({starttime: sortType === "asc"? 1: -1});
+
+            if (url.indexOf('execs/summary') >= 0) {
+                query.select(["flowId", "status", "phase", "size", "operator", "starttime", "endtime"])
+                    .populate("operator", "name")
+                    .populate("flowId", "name");
+            }
+            if (status) query.where({status});
+
+            const instanceList = await query.exec();
+            return resp.json(instanceList);
+        } catch (error) {
+            console.log(error)
+            resp.sendStatus(500);
+        }
+    },
+
     async create(req, resp){
         const userId = req.get('user-id');
         const {flowId} = req.params;

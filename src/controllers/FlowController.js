@@ -16,7 +16,7 @@ module.exports = {
         try {
             const gottenFlow = await db.Flow.findById(req.params.id)
                 .populate('author', 'name -_id')
-                .populate('phases', ' -__v -creation -modified -flowId');
+                .populate('phases', ' -__v -creation -flowId');
             //console.log()
             return resp.send(gottenFlow);
         } catch (error) {

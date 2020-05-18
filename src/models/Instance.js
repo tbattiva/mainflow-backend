@@ -5,7 +5,10 @@ const Instance = mongoose.model(
   new mongoose.Schema({
     starttime: Date,
     endtime: Date,
-    flowId: String,
+    flowId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Flow"
+    } ,
     status: String,
     phase: Number,
     size: Number,

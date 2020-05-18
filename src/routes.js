@@ -43,6 +43,12 @@ routes.put('/flows/:flowId/phases/:phaseId', PhaseController.update);
 routes.post('/flows/:flowId/start', ExecutionController.create);
 routes.delete('/flows/:flowId/stop', ExecutionController.remove);
 
+routes.get('/execs/summary/:sortType/:status', ExecutionController.index);
+routes.get('/execs/summary/:sortType/', ExecutionController.index);
+routes.get('/execs/:sortType/:status', ExecutionController.index);
+routes.get('/execs/:sortType/', ExecutionController.index);
+routes.get('/execs/', ExecutionController.index);
+
 routes.post('/users', UserController.store);
 routes.delete('/users/:userId', UserController.delete);
 
