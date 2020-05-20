@@ -46,11 +46,24 @@ module.exports = {
         return resp.json(latentFlow.instance);
     },
 
-    remove(req, resp){
+    async remove(req, resp){
         const {flowId} = req.params;
         app.locals.flowInstances[flowId] = false;
 
-        resp.json({ret:0, message:"stop command sent"});
+        try {
+            await db.Instance.findOneAndUpdate(
+                {status:{$in: ["starting","running"]}, flowId},
+                {$set:{status:"stopping"}}
+            );
+            
+            resp.json({ret:0, message:"stop command sent"});
+
+        } catch (error) {
+            console.log(error);
+            return resp.json({message:error});
+        }
+
+        
     }
 
    

@@ -35,6 +35,7 @@ routes.get('/flows/:id', FlowController.open);
 routes.post('/flows', FlowController.store);
 routes.delete('/flows/:flowId', FlowController.delete);
 routes.put('/flows/:flowId', FlowController.update);
+routes.get('/flows/check/:flowId', FlowController.check);
 
 routes.post('/flows/:flowId/phases', PhaseController.store);
 routes.delete('/flows/:flowId/phases/:phaseId', PhaseController.delete);

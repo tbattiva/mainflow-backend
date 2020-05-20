@@ -57,7 +57,8 @@ module.exports = class FlowInstance {
             status: this.status,
             phase: this.phase,
             size: this.size,
-            operator: this.operator
+            operator: this.operator,
+            ip:this.ip
         }
     }
 
@@ -67,7 +68,7 @@ module.exports = class FlowInstance {
                 console.log("waiting", Date.now())
                 try {
                     
-                    await this.sleep(20000);
+                    //await this.sleep(20000);
                 } catch (error) {
                     console.log("erro")
                 }
@@ -105,6 +106,7 @@ module.exports = class FlowInstance {
                                 console.log(err);
                             }
                         );
+                        this.finish();
                     }
 
                     return 1;
@@ -165,6 +167,7 @@ module.exports = class FlowInstance {
     }
 
     async connect(user, pass, ip, port){
+        this.ip = ip;
         this.zInterface = new zoweInterface(user, pass, ip, port);
         this.isConnected = await this.zInterface.startSession();
 
@@ -209,7 +212,7 @@ module.exports = class FlowInstance {
         this.status = "stoped";
 
         console.log(`Flow (${this.instance.flowId}) Execution STOPED by command (instance ${this.instance._id})`);
-
+        this.finish();
         this.update(
             (docInstance) =>{},
             (error) =>{}
@@ -239,7 +242,9 @@ module.exports = class FlowInstance {
         
     }
 
-
+    finish(){
+        app.locals.flowInstances[this.instance.flowId] = false;
+    }
     
 }
 

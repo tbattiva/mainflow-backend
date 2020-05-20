@@ -16,7 +16,9 @@ const Instance = mongoose.model(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User"
     } ,
-    phaseOutput:[]
+    phaseOutput:[],
+    phaseSysout:[],
+    ip:String,
   })
 );
 
