@@ -31,7 +31,7 @@ module.exports = {
         const {flowId} = req.params;
         const {host, port, user, pass} = req.body;
 
-        const latentFlow = new FlowInstance(flowId, userId);
+        const latentFlow = new FlowInstance(flowId, userId, req.app);
         
 
         const connectionRet = await latentFlow.connect(user, pass, host, port);
@@ -48,7 +48,7 @@ module.exports = {
 
     async remove(req, resp){
         const {flowId} = req.params;
-        app.locals.flowInstances[flowId] = false;
+        req.app.locals.flowInstances[flowId] = false;
 
         try {
             await db.Instance.findOneAndUpdate(

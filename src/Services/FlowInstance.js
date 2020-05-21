@@ -1,8 +1,11 @@
 const db = require('../models');
 const zoweInterface = require('./ZoweInterface');
+const { sendNewFlow, sendEndFlow} = require('../websocket');
 
 module.exports = class FlowInstance {
-    constructor(flowId, operator){
+    constructor(flowId, operator,app){
+        this.app = app;
+
         this.flowId = flowId;
         this.starttime = undefined;
         this.endtime = undefined;
@@ -28,7 +31,7 @@ module.exports = class FlowInstance {
 
     async insert(){
         this.instance = await db.Instance.create(this.json());
-        app.locals.flowInstances[this.instance.flowId] = true;
+        this.app.locals.flowInstances[this.instance.flowId] = true;
         return;
     }
 
@@ -63,12 +66,12 @@ module.exports = class FlowInstance {
     }
 
     async execNext(){
-        if (app.locals.flowInstances[this.instance.flowId]){
+        if (this.app.locals.flowInstances[this.instance.flowId]){
             if((this.instance.status == "starting" || this.instance.status == "running") ){
                 console.log("waiting", Date.now())
                 try {
                     
-                    //await this.sleep(20000);
+                    await this.sleep(5000);
                 } catch (error) {
                     console.log("erro")
                 }
@@ -99,14 +102,16 @@ module.exports = class FlowInstance {
                         this.update(
                             docInstance => {
                                 console.log(`Flow (${docInstance.flowId}) Execution Finished by instance ${docInstance._id}`);
+                                this.finish();
                             },
                             err => {
                                 console.log(`Flow (${docInstance.flowId}) Finalization ERROR <<< by instance ${docInstance._id}`);
                                 console.log('------------ERROR MSG--------------')
                                 console.log(err);
+                                this.finish();
                             }
                         );
-                        this.finish();
+                        
                     }
 
                     return 1;
@@ -195,6 +200,7 @@ module.exports = class FlowInstance {
                 this.status = docInstance.status;
                 this.phase = docInstance.phase;
 
+                sendNewFlow(this.instance.flowId);
                 this.execNext();
 
                 
@@ -212,10 +218,10 @@ module.exports = class FlowInstance {
         this.status = "stoped";
 
         console.log(`Flow (${this.instance.flowId}) Execution STOPED by command (instance ${this.instance._id})`);
-        this.finish();
+        
         this.update(
-            (docInstance) =>{},
-            (error) =>{}
+            (docInstance) =>{ this.finish(); },
+            (error) =>{ this.finish(); }
         )
 
     }
@@ -243,7 +249,8 @@ module.exports = class FlowInstance {
     }
 
     finish(){
-        app.locals.flowInstances[this.instance.flowId] = false;
+        this.app.locals.flowInstances[this.instance.flowId] = false;
+        sendEndFlow();
     }
     
 }

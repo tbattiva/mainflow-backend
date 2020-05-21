@@ -82,12 +82,17 @@ module.exports = {
 
     async check(req, resp){
         const {flowId} = req.params;
-        const isRunning = app.locals.flowInstances[flowId];
+        const isRunning = req.app.locals.flowInstances[flowId];
         let ret = {
             "id": flowId,
             isRunning
         }
-        if (isRunning) ret.instance = await db.Instance.findOne({status: {$in: ["starting","running"]}, flowId});
-        return resp.json(ret);
+        try {
+            if (isRunning) ret.instance = await db.Instance.findOne({status: {$in: ["starting","running"]}, flowId});
+            return resp.json(ret);
+        } catch (error) {
+            resp.send(error);
+        }
+        
     }
 }
