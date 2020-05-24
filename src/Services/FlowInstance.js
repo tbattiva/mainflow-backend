@@ -1,6 +1,6 @@
 const db = require('../models');
 const zoweInterface = require('./ZoweInterface');
-const { sendNewFlow, sendEndFlow} = require('../websocket');
+const { sendNewFlow, sendEndFlow, sendNewPhase, sendEndedPhase} = require('../websocket');
 
 module.exports = class FlowInstance {
     constructor(flowId, operator,app){
@@ -130,6 +130,7 @@ module.exports = class FlowInstance {
         const phase = db.Phase
             .findById(this.flow.phases[this.phase-1])
                 .then(async docPhase =>{
+                    sendNewPhase(this.instance.flowId, this.phase);
                     let resp = "";
                     let result = "";
                     if (docPhase.type == 1){
@@ -155,12 +156,14 @@ module.exports = class FlowInstance {
                         },
                         { new: true, useFindAndModify: false }
                     ).then( async docInstance =>{
+                        sendEndedPhase(this.instance.flowId, this.phase);
                         this.instance = docInstance;
                         
                     }).catch(error =>{
                         console.log(error);
                     });
-                    if(docPhase.nextPhaseCondition.indexOf(result.toString())>=0){
+                    
+                    if(docPhase.nextPhaseCondition.indexOf(result.toString())>=0){      
                         this.execNext();
                     }
                     else{
@@ -200,7 +203,7 @@ module.exports = class FlowInstance {
                 this.status = docInstance.status;
                 this.phase = docInstance.phase;
 
-                sendNewFlow(this.instance.flowId);
+                sendNewFlow(this.instance.flowId, this.ip);
                 this.execNext();
 
                 
@@ -250,7 +253,7 @@ module.exports = class FlowInstance {
 
     finish(){
         this.app.locals.flowInstances[this.instance.flowId] = false;
-        sendEndFlow();
+        sendEndFlow(this.instance.flowId);
     }
     
 }
