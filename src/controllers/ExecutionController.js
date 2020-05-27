@@ -3,6 +3,23 @@ const db = require('../models');
 
 
 module.exports = {
+    async one(req, resp){
+        const {instanceId} = req.params;
+
+        try {
+            const instance = await db.Instance.findById(instanceId)
+                .populate("operator", "name")
+                .populate({
+                    path: "flowId",
+                    populate: {path: "phases"}
+                })
+
+            return resp.json(instance);
+        } catch (error) {
+            console.log(error);
+            return resp.json({message:error});
+        }
+    }, 
     async index(req, resp){
         const url = req.url;
         const {status, sortType} = req.params;

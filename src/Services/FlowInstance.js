@@ -70,8 +70,7 @@ module.exports = class FlowInstance {
             if((this.instance.status == "starting" || this.instance.status == "running") ){
                 console.log("waiting", Date.now())
                 try {
-                    
-                    await this.sleep(5000);
+                    await this.sleep(1000);
                 } catch (error) {
                     console.log("erro")
                 }
