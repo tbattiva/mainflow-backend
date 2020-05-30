@@ -44,6 +44,7 @@ module.exports = class ZoweInterface{
     }
 
     async submitJCL(jcl){
+
         try {
             const resp = await zowe.SubmitJobs.submitJclNotify(this.zosmfSession, jcl, {jclSource: "stdin", viewAllSpoolContent: true});
             return resp;
@@ -51,5 +52,19 @@ module.exports = class ZoweInterface{
             console.log(error)
             return -1;
         }
+    }
+
+    async submitJCLSysout(jcl){
+        const parms ={jclSource: "stdin", viewAllSpoolContent: true, directory: "./"}
+        try {
+            const jobInfo =await zowe.SubmitJobs.submitJclNotifyCommon(zosmfSession, {jcl, status:"OUTPUT"})
+            console.log(jobInfo);
+            const info = await zowe.SubmitJobs.checkSubmitOptions(zosmfSession, parms, jobInfo);
+            console.log(info);
+            
+        } catch (error) {
+            console.log(error);
+        }
+
     }
 }
