@@ -13,3 +13,7 @@ Mainframe Batch Flows Manager (Zowe + JS)
   * Session Login
   * Websocket Communication
 
+## If you are cloning this project to try it out
+
+ * do not forget to build your MongoDB; and
+ * change the .env file to reach the right DB
