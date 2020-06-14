@@ -131,18 +131,20 @@ module.exports = class FlowInstance {
                 .then(async docPhase =>{
                     sendNewPhase(this.instance.flowId, this.phase);
                     let resp = "";
+                    let sysout= "";
                     let result = "";
                     if (docPhase.type == 1){
                         // run job stored on mainframe
                     }
                     else if (docPhase.type == 2){
                         // run job stored on db
-                        resp = await this.zInterface.submitJCL(docPhase.object);
+                        [resp,sysout] = await this.zInterface.submitJCLSysout(docPhase.object);
                         result = resp.retcode;
                     }
                     else if (docPhase.type == 3){
                         // run console command
                         resp = await this.zInterface.sendConsoleCommand(docPhase.object);
+                        sysout = "";
                         result = resp.success;
                     }
                     console.log(resp);
@@ -150,7 +152,9 @@ module.exports = class FlowInstance {
                         this.instance._id,
                         {
                             $push:{
-                                phaseOutput: resp 
+                                phaseOutput: resp ,
+                                phaseSysout: [sysout]
+
                             }
                         },
                         { new: true, useFindAndModify: false }
@@ -247,7 +251,8 @@ module.exports = class FlowInstance {
             (docInstance) =>{},
             (error) =>{}
         )
-        
+
+        this.finish();
     }
 
     finish(){

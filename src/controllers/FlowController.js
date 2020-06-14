@@ -89,6 +89,7 @@ module.exports = {
         }
         try {
             if (isRunning) ret.instance = await db.Instance.findOne({status: {$in: ["starting","running"]}, flowId});
+            if (ret.instance == null) ret.isRunning = false;
             return resp.json(ret);
         } catch (error) {
             resp.send(error);
